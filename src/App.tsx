@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+// --- API URL ---
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
 // --- TYPES ---
 interface Ingredient {
   name: string;
@@ -192,7 +195,7 @@ const HomePage = ({ onFindRecipes }: HomePageProps) => {
       reader.onloadend = async () => {
           try {
               const base64data = reader.result as string;
-              const response = await fetch('http://localhost:5001/recognize_ingredients', {
+              const response = await fetch(`${apiUrl}/recognize_ingredients`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ image: base64data })
@@ -440,7 +443,7 @@ const RecipesPage = ({ ingredients, dietary, servings, cuisine, onBack, onRecipe
 
     const fetchFavorites = async () => {
         if (token) {
-            const response = await fetch('http://localhost:5001/favorites', {
+            const response = await fetch(`${apiUrl}/favorites`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -462,7 +465,7 @@ const RecipesPage = ({ ingredients, dietary, servings, cuisine, onBack, onRecipe
             }
 
             try {
-                const response = await fetch(`http://localhost:5001${endpoint}`, {
+                const response = await fetch(`${apiUrl}${endpoint}`, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({ ingredients, dietary, servings, cuisine }),
@@ -512,7 +515,7 @@ const RecipesPage = ({ ingredients, dietary, servings, cuisine, onBack, onRecipe
         if (token) {
             const isCurrentlyFavorite = favorites.includes(recipe.id);
             const endpoint = isCurrentlyFavorite ? '/unfavorite' : '/favorite';
-            await fetch(`http://localhost:5001${endpoint}`, {
+            await fetch(`${apiUrl}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -580,7 +583,7 @@ const LoginPage = ({ setToken, setPage }: { setToken: (token: string) => void, s
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:5001/login', {
+        const response = await fetch(`${apiUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
@@ -622,7 +625,7 @@ const SignupPage = ({ setPage }: { setPage: (page: string) => void }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:5001/register', {
+        const response = await fetch(`${apiUrl}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
@@ -659,7 +662,7 @@ const FavoritesPage = ({ token, onRecipeSelect }: { token: string | null, onReci
     useEffect(() => {
         const fetchFavorites = async () => {
             if (token) {
-                const response = await fetch('http://localhost:5001/favorites', {
+                const response = await fetch(`${apiUrl}/favorites`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
@@ -673,7 +676,7 @@ const FavoritesPage = ({ token, onRecipeSelect }: { token: string | null, onReci
 
     const handleUnfavorite = async (recipeId: number | string) => {
         if (token) {
-            await fetch('http://localhost:5001/unfavorite', {
+            await fetch(`${apiUrl}/unfavorite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
